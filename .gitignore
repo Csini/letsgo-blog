@@ -19,3 +19,13 @@
 
 # Go workspace file
 go.work
+
+#maven
+/bin
+*/bin
+
+#eclipse
+.project
+*/.project
+/.settings
+*/.settings
