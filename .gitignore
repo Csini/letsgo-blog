@@ -23,6 +23,8 @@ go.work
 #maven
 /bin
 */bin
+/target
+*/target
 
 #eclipse
 .project

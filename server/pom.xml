@@ -51,16 +51,17 @@
 						<configuration>
 							<packages>
 								<package>github.com/gorilla/mux</package>
+								<package>github.com/sirupsen/logrus</package>
 							</packages>
 						</configuration>
 					</execution>
-<!-- 					<execution> -->
-<!-- 						<id>default-test</id> -->
-<!-- 						<phase>process-sources</phase> -->
-<!-- 						<configuration> -->
-<!-- 							<useGoTool>goconfig</useGoTool> -->
-<!-- 						</configuration> -->
-<!-- 					</execution> -->
+					<!-- <execution> -->
+					<!-- <id>default-test</id> -->
+					<!-- <phase>process-sources</phase> -->
+					<!-- <configuration> -->
+					<!-- <useGoTool>goconfig</useGoTool> -->
+					<!-- </configuration> -->
+					<!-- </execution> -->
 				</executions>
 			</plugin>
 			<plugin>
@@ -86,7 +87,7 @@
 					<environmentVariables>
 						<GO_POST_PROCESS_FILE>bin/goconfig</GO_POST_PROCESS_FILE>
 					</environmentVariables>
-					
+
 				</configuration>
 				<executions>
 					<execution>
@@ -101,6 +102,8 @@
 							<generatorName>go-server</generatorName>
 
 							<verbose>false</verbose>
+
+							<skip>true</skip>
 
 
 
