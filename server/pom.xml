@@ -52,14 +52,41 @@
 							<packages>
 								<package>github.com/gorilla/mux</package>
 								<package>github.com/sirupsen/logrus</package>
+								<package>golang.org/x/tools/cmd/goimports</package>
 							</packages>
 						</configuration>
 					</execution>
+					<execution>
+						<id>default-test</id>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</execution>
 					<!-- <execution> -->
-					<!-- <id>default-test</id> -->
-					<!-- <phase>process-sources</phase> -->
+					<!-- <id>default-fmt</id> -->
 					<!-- <configuration> -->
-					<!-- <useGoTool>goconfig</useGoTool> -->
+					<!-- <useGoTool>bin/goimports</useGoTool> -->
+					<!-- <buildFlags> -->
+					<!-- <buildFlag>-l</buildFlag> -->
+					<!-- <buildFlag>-w</buildFlag> -->
+					<!-- </buildFlags> -->
+					<!-- <exec>goimports</exec> -->
+					<!-- </configuration> -->
+					<!-- </execution> -->
+					<!-- <execution> -->
+					<!-- <id>run-goimports</id> -->
+					<!-- <phase>process-sources</phase> -->
+					<!-- <goals> -->
+					<!-- <goal>custom</goal> -->
+					<!-- </goals> -->
+					<!-- <configuration> -->
+					<!-- <xprog>goimports</xprog> -->
+					<!-- <args> -->
+					<!-- <arg>-l</arg> -->
+					<!-- <arg>-w</arg> -->
+					<!-- </args> -->
+					<!-- <customCommand>goimports -l -w</customCommand> -->
+					<!-- <execSubpath>bin</execSubpath> -->
 					<!-- </configuration> -->
 					<!-- </execution> -->
 				</executions>
@@ -113,13 +140,33 @@
 								<sourceFolder>/generated/openapi</sourceFolder>
 								<featureCORS>false</featureCORS>
 								<onlyInterfaces>true</onlyInterfaces>
-								<serverPort>8080</serverPort>
+								<serverPort>8085</serverPort>
 							</configOptions>
-
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+			<!-- <plugin> -->
+			<!-- <artifactId>exec-maven-plugin</artifactId> -->
+			<!-- <groupId>org.codehaus.mojo</groupId> -->
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <id>Run goimports</id> -->
+			<!-- <phase>process-sources</phase> -->
+			<!-- <goals> -->
+			<!-- <goal>exec</goal> -->
+			<!-- </goals> -->
+			<!-- <configuration> -->
+			<!-- <executable>goimports</executable> -->
+			<!-- <workingDirectory>/home/csini/.mvnGoLang/go1.18.3.linux-amd64/bin</workingDirectory> -->
+			<!-- <arguments> -->
+			<!-- <argument>-l</argument> -->
+			<!-- <argument>-w</argument> -->
+			<!-- </arguments> -->
+			<!-- </configuration> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+			<!-- </plugin> -->
 		</plugins>
 	</build>
 

@@ -1,8 +1,18 @@
+/*
+ * Let's go Blog API
+ *
+ * Application providing Blog.
+ *
+ * API version: 1.0.0
+ */
+
 package main
 
 import (
-	"common"
+	openapi "generated/openapi"
 	log "github.com/sirupsen/logrus"
+	impl "impl"
+	"net/http"
 	"os"
 )
 
@@ -19,13 +29,19 @@ func init() {
 	//TODO
 	log.SetLevel(log.DebugLevel)
 }
+
 func main() {
 
-	common.PrintHello("universe")
-
-	log.WithFields(log.Fields{
+	/*log.WithFields(log.Fields{
 		"prefix":      "sensor",
 		"temperature": -4,
-	}).Info("Temperature changes")
+	}).Info("Temperature changes")*/
 
+	log.Info("Server started")
+
+	StatisticsAPIService := impl.NewStatisticsAPIService()
+	StatisticsAPIController := openapi.NewStatisticsAPIController(StatisticsAPIService)
+
+	router := openapi.NewRouter(StatisticsAPIController)
+	log.Fatal(http.ListenAndServe(":8085", router))
 }
