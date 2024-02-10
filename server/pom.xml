@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>hu.letsgo.blog</groupId>
+		<artifactId>letsgo-blog</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>letsgo-blog-server</artifactId>
+	<packaging>mvn-golang</packaging>
+
+	<name>Server</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>hu.letsgo.blog</groupId>
+			<artifactId>letsgo-blog-common</artifactId>
+			<type>mvn-golang</type>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<sourceDirectory>${basedir}${file.separator}src</sourceDirectory>
+		<directory>${basedir}${file.separator}bin</directory>
+		<finalName>${project.artifactId}-${project.version}${final.extension}</finalName>
+
+		<resources>
+			<resource>
+				<directory>${basedir}${file.separator}res</directory>
+			</resource>
+		</resources>
+
+		<plugins>
+			<plugin>
+				<groupId>com.igormaznitsa</groupId>
+				<artifactId>mvn-golang-wrapper</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<goVersion>${go.sdk.version}</goVersion>
+					<env>
+						<GO111MODULE>auto</GO111MODULE>
+					</env>
+				</configuration>
+				<executions>
+					<execution>
+						<id>default-get</id>
+						<configuration>
+							<packages>
+								<package>github.com/gorilla/mux</package>
+							</packages>
+						</configuration>
+					</execution>
+<!-- 					<execution> -->
+<!-- 						<id>default-test</id> -->
+<!-- 						<phase>process-sources</phase> -->
+<!-- 						<configuration> -->
+<!-- 							<useGoTool>goconfig</useGoTool> -->
+<!-- 						</configuration> -->
+<!-- 					</execution> -->
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.openapitools</groupId>
+				<artifactId>openapi-generator-maven-plugin</artifactId>
+				<!-- RELEASE_VERSION -->
+				<version>7.3.0</version>
+				<!-- /RELEASE_VERSION -->
+				<dependencies>
+					<dependency>
+						<groupId>${project.groupId}</groupId>
+						<artifactId>letsgo-blog-api</artifactId>
+						<version>${project.parent.version}</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+
+					<options>
+						<option>enablePostProcessFile</option>
+					</options>
+
+					<enablePostProcessFile>true</enablePostProcessFile>
+					<environmentVariables>
+						<GO_POST_PROCESS_FILE>bin/goconfig</GO_POST_PROCESS_FILE>
+					</environmentVariables>
+					
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<!-- specify the OpenAPI spec -->
+							<inputSpec>letsgo-blog.yaml</inputSpec>
+							<output>${project.basedir}/src</output>
+
+							<generatorName>go-server</generatorName>
+
+							<verbose>false</verbose>
+
+
+
+							<!-- pass any necessary config options -->
+							<configOptions>
+								<outputAsLibrary>true</outputAsLibrary>
+								<sourceFolder>/generated/openapi</sourceFolder>
+								<featureCORS>false</featureCORS>
+								<onlyInterfaces>true</onlyInterfaces>
+								<serverPort>8080</serverPort>
+							</configOptions>
+
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

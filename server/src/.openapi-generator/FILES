@@ -1,0 +1,12 @@
+README.md
+api/openapi.yaml
+generated/openapi/api.go
+generated/openapi/api_statistics.go
+generated/openapi/error.go
+generated/openapi/helpers.go
+generated/openapi/impl.go
+generated/openapi/logger.go
+generated/openapi/model_error.go
+generated/openapi/model_statistic.go
+generated/openapi/model_statistics_response.go
+generated/openapi/routers.go

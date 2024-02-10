@@ -1,0 +1,152 @@
+openapi: 3.0.3
+info:
+  contact:
+    name: Csini
+  description: Application providing Blog.
+  title: Let's go Blog API
+  version: 1.0.0
+servers:
+- description: Local environment (mainly for development)
+  url: http://localhost:8080/letsgo/v1
+tags:
+- description: Provides endpoints to login
+  name: Authentication
+- description: Provides endpoints to read Statistics
+  name: Statistics
+- description: Provides endpoints to write Comment
+  name: Comment
+paths:
+  /api/statistics/{days}:
+    get:
+      description: |
+        This endpoint is responsible to provide statistics about user activity from the last X days.
+      operationId: getStatistics
+      parameters:
+      - description: how many days to return
+        explode: false
+        in: path
+        name: days
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatisticsResponse'
+          description: Returns the persised list of users with their statistics
+        "400":
+          content:
+            application/json:
+              example:
+                message: Request cannot be processed because it is syntactically wrong
+                timestamp: 2023-04-20T11:00:00Z
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Syntax error.
+        "500":
+          content:
+            application/json:
+              example:
+                message: Internal server error
+                timestamp: 2023-04-20T11:00:00Z
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+      summary: Provides statistics about user activity
+      tags:
+      - Statistics
+components:
+  responses:
+    BadRequestError:
+      content:
+        application/json:
+          example:
+            message: Request cannot be processed because it is syntactically wrong
+            timestamp: 2023-04-20T11:00:00Z
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Syntax error.
+    UnauthorizedError:
+      content:
+        application/json:
+          example:
+            message: Authentication error
+            timestamp: 2023-04-20T11:00:00Z
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Authentication error
+    InternalServerError:
+      content:
+        application/json:
+          example:
+            message: Internal server error
+            timestamp: 2023-04-20T11:00:00Z
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Internal server error
+  schemas:
+    StatisticsResponse:
+      example:
+        size: 1
+        items:
+        - amountBlog: 1
+          amountComment: 1
+          userid: 617a6118-a641-42f7-a3a5-5d6ff85b5654
+        - amountBlog: 1
+          amountComment: 1
+          userid: 617a6118-a641-42f7-a3a5-5d6ff85b5654
+      properties:
+        size:
+          example: 1
+          type: integer
+        items:
+          items:
+            $ref: '#/components/schemas/Statistic'
+          type: array
+      type: object
+    Statistic:
+      example:
+        amountBlog: 1
+        amountComment: 1
+        userid: 617a6118-a641-42f7-a3a5-5d6ff85b5654
+      properties:
+        userid:
+          example: 617a6118-a641-42f7-a3a5-5d6ff85b5654
+          type: string
+        amountBlog:
+          example: 1
+          type: integer
+        amountComment:
+          example: 1
+          type: integer
+      type: object
+    Error:
+      description: Error object
+      example:
+        message: message
+        timestamp: timestamp
+      properties:
+        message:
+          description: Error message
+          type: string
+        timestamp:
+          description: The timestamp the error has occured
+          type: string
+      required:
+      - message
+      - timestamp
+      type: object
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http

@@ -21,11 +21,11 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/../app-2/bin</directory>
+      <directory>${project.basedir}/../server/bin</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
-        <include>letsgo-blog-app-2-${project.version}</include>
-        <include>letsgo-blog-app-2-${project.version}.exe</include>
+        <include>letsgo-blog-server-${project.version}</include>
+        <include>letsgo-blog-server-${project.version}.exe</include>
       </includes>
     </fileSet>
   </fileSets>

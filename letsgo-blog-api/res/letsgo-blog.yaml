@@ -1,0 +1,125 @@
+openapi: 3.0.3
+info:
+  description:
+    Application providing Blog.
+  version: 1.0.0
+  title: Let's go Blog API
+  contact:
+    name: >-
+      Csini
+
+servers:
+  - url: http://localhost:8080/letsgo/v1
+    description: Local environment (mainly for development)
+
+tags:
+  - name: Authentication
+    description: Provides endpoints to login
+  - name: Statistics
+    description: Provides endpoints to read Statistics
+  - name: Comment
+    description: Provides endpoints to write Comment
+
+paths:
+  /api/statistics/{days}:
+    get:
+      tags:
+        - Statistics
+      summary: Provides statistics about user activity
+      description: |
+        This endpoint is responsible to provide statistics about user activity from the last X days.
+      operationId: getStatistics
+      parameters:
+        - in: path
+          name: days
+          required: true
+          schema:
+            type: integer
+          description: how many days to return
+      responses:
+        200:
+          description: Returns the persised list of users with their statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatisticsResponse'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
+  responses:
+    BadRequestError:
+      description: Syntax error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Request cannot be processed because it is syntactically wrong
+            timestamp: '2023-04-20T11:00:00Z'
+    UnauthorizedError:
+      description: Authentication error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Authentication error
+            timestamp: '2023-04-20T11:00:00Z'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Internal server error
+            timestamp: '2023-04-20T11:00:00Z'
+  schemas:
+    StatisticsResponse:
+      type: object
+      properties:
+        size:
+          type: integer
+          example: 1
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Statistic'
+    Statistic:
+      type: object
+      properties:
+        userid: 
+          type: string
+          example: 617a6118-a641-42f7-a3a5-5d6ff85b5654
+        amountBlog:
+          type: integer
+          example: 1
+        amountComment:
+          type: integer
+          example: 1
+    Error:
+      type: object
+      description: Error object
+      required:
+        - message
+        - timestamp
+      properties:
+        message:
+          type: string
+          description: Error message
+        timestamp:
+          type: string
+          description: The timestamp the error has occured
