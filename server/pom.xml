@@ -53,15 +53,41 @@
 								<package>github.com/gorilla/mux</package>
 								<package>github.com/sirupsen/logrus</package>
 								<package>golang.org/x/tools/cmd/goimports</package>
+								<!-- <package>github.com/go-chi/chi/v5</package> -->
 							</packages>
 						</configuration>
 					</execution>
+					<!-- <execution> -->
+					<!-- <id>get-chi</id> -->
+					<!-- <goals> -->
+					<!-- <goal>get</goal> -->
+					<!-- </goals> -->
+					<!-- <configuration> -->
+					<!-- <packages> -->
+					<!-- <package>github.com/go-chi/chi</package> -->
+					<!-- </packages> -->
+					<!-- <tag>v5.0.11</tag> -->
+					<!-- </configuration> -->
+					<!-- </execution> -->
 					<execution>
 						<id>default-test</id>
 						<configuration>
 							<skip>true</skip>
 						</configuration>
 					</execution>
+					<!-- <execution> -->
+					<!-- <id>default-mod</id> -->
+					<!-- <phase>process-resources</phase> -->
+					<!-- <goals> -->
+					<!-- <goal>mod</goal> -->
+					<!-- </goals> -->
+					<!-- <configuration> -->
+					<!-- <command>init</command> -->
+					<!-- <arguments> -->
+					<!-- <argument>github.com/go-chi/chi/v5</argument> -->
+					<!-- </arguments> -->
+					<!-- </configuration> -->
+					<!-- </execution> -->
 					<!-- <execution> -->
 					<!-- <id>default-fmt</id> -->
 					<!-- <configuration> -->
@@ -112,7 +138,7 @@
 
 					<enablePostProcessFile>true</enablePostProcessFile>
 					<environmentVariables>
-						<GO_POST_PROCESS_FILE>bin/goconfig</GO_POST_PROCESS_FILE>
+						<GO_POST_PROCESS_FILE>bin/goimports</GO_POST_PROCESS_FILE>
 					</environmentVariables>
 
 				</configuration>
@@ -130,12 +156,14 @@
 
 							<verbose>false</verbose>
 
-							<skip>true</skip>
+							<skip>false</skip>
+
 
 
 
 							<!-- pass any necessary config options -->
 							<configOptions>
+								<!-- <router>chi</router> -->
 								<outputAsLibrary>true</outputAsLibrary>
 								<sourceFolder>/generated/openapi</sourceFolder>
 								<featureCORS>false</featureCORS>
@@ -146,27 +174,27 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- <plugin> -->
-			<!-- <artifactId>exec-maven-plugin</artifactId> -->
-			<!-- <groupId>org.codehaus.mojo</groupId> -->
-			<!-- <executions> -->
-			<!-- <execution> -->
-			<!-- <id>Run goimports</id> -->
-			<!-- <phase>process-sources</phase> -->
-			<!-- <goals> -->
-			<!-- <goal>exec</goal> -->
-			<!-- </goals> -->
-			<!-- <configuration> -->
-			<!-- <executable>goimports</executable> -->
-			<!-- <workingDirectory>/home/csini/.mvnGoLang/go1.18.3.linux-amd64/bin</workingDirectory> -->
-			<!-- <arguments> -->
-			<!-- <argument>-l</argument> -->
-			<!-- <argument>-w</argument> -->
-			<!-- </arguments> -->
-			<!-- </configuration> -->
-			<!-- </execution> -->
-			<!-- </executions> -->
-			<!-- </plugin> -->
+			<plugin>
+				<artifactId>exec-maven-plugin</artifactId>
+				<groupId>org.codehaus.mojo</groupId>
+				<executions>
+					<execution>
+						<id>Run goimports</id>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>goimports</executable>
+							<arguments>
+								<argument>-l</argument>
+								<argument>-w </argument>
+								<argument>${basedir}${file.separator}src/generated/openapi/api_statistics.go</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
