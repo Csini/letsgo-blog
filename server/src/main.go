@@ -10,10 +10,16 @@ package main
 
 import (
 	openapi "generated/openapi"
-	log "github.com/sirupsen/logrus"
 	impl "impl"
 	"net/http"
 	"os"
+
+	log "github.com/sirupsen/logrus"
+
+	"entity"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func init() {
@@ -33,15 +39,44 @@ func init() {
 func main() {
 
 	/*log.WithFields(log.Fields{
-		"prefix":      "sensor",
-		"temperature": -4,
-	}).Info("Temperature changes")*/
+		 "prefix":      "sensor",
+		 "temperature": -4,
+	 }).Info("Temperature changes")*/
+	var err error
+	var db *gorm.DB
+	if db, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{}); err != nil {
+		log.Printf("failed to connect database, got error %v\n", err)
+		os.Exit(1)
+	} else {
+		sqlDB, err := db.DB()
+		if err == nil {
+			err = sqlDB.Ping()
+		}
 
-	log.Info("Server started")
+		if err != nil {
+			log.Printf("failed to connect database, got error %v\n", err)
+		}
+
+		//sqlite
+		db.Exec("PRAGMA foreign_keys = ON")
+
+		db.Logger = db.Logger.LogMode(logger.Info)
+	}
+
+	// Migrate the schema
+	db.AutoMigrate(&entity.User{}, &entity.Blog{}, &entity.Comment{})
+
+	// Create
+	db.Create(&entity.User{Username: "test", Pw: "abc"})
+
+	log.Info("DB created")
 
 	StatisticsAPIService := impl.NewStatisticsAPIService()
 	StatisticsAPIController := openapi.NewStatisticsAPIController(StatisticsAPIService)
 
 	router := openapi.NewRouter(StatisticsAPIController)
+
+	log.Info("Server started")
+
 	log.Fatal(http.ListenAndServe(":8085", router))
 }

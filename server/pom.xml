@@ -50,10 +50,14 @@
 						<id>default-get</id>
 						<configuration>
 							<packages>
+								<!-- <package>github.com/go-chi/chi/v5</package> -->
 								<package>github.com/gorilla/mux</package>
 								<package>github.com/sirupsen/logrus</package>
-								<package>golang.org/x/tools/cmd/goimports</package>
-								<!-- <package>github.com/go-chi/chi/v5</package> -->
+<!-- 								<package>golang.org/x/tools/cmd/goimports</package> -->
+<!-- 								<package>golang.org/x/tools/cmd/guru</package> -->
+<!-- 								<package>github.com/rogpeppe/godef</package> -->
+								<package>gorm.io/gorm</package>
+								<package>gorm.io/driver/sqlite</package>
 							</packages>
 						</configuration>
 					</execution>
@@ -69,12 +73,12 @@
 					<!-- <tag>v5.0.11</tag> -->
 					<!-- </configuration> -->
 					<!-- </execution> -->
-					<execution>
-						<id>default-test</id>
-						<configuration>
-							<skip>true</skip>
-						</configuration>
-					</execution>
+<!-- 					<execution> -->
+<!-- 						<id>default-test</id> -->
+<!-- 						<configuration> -->
+<!-- 							<skip>true</skip> -->
+<!-- 						</configuration> -->
+<!-- 					</execution> -->
 					<!-- <execution> -->
 					<!-- <id>default-mod</id> -->
 					<!-- <phase>process-resources</phase> -->

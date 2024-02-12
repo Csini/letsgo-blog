@@ -13,8 +13,13 @@ import (
 	"context"
 	"errors"
 	openapi "generated/openapi"
-	log "github.com/sirupsen/logrus"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
+
+	"entity"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 // StatisticsAPIService is a service that implements the logic for the StatisticsAPIServicer
@@ -47,7 +52,23 @@ func (s *StatisticsAPIService) GetStatistics(ctx context.Context, days int32) (o
 
 	log.WithFields(log.Fields{
 		"days": days,
-	}).Info("Statistics called")
+	}).Info("Statistics called - 2222")
+
+	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	if err != nil {
+		log.Error(err)
+		return openapi.Response(500, nil), errors.New("GetStatistics failed to connect database")
+	} else {
+		log.Info("yuhuuuuu")
+	}
+
+	// Read
+	var user entity.User
+	db.First(&user, "Username = ?", "test") // find
+
+	log.WithFields(log.Fields{
+		"user": user,
+	}).Info("User")
 
 	return openapi.Response(http.StatusNotImplemented, nil), errors.New("GetStatistics method not implemented")
 }
