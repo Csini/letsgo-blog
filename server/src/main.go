@@ -20,6 +20,8 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func init() {
@@ -67,7 +69,14 @@ func main() {
 	db.AutoMigrate(&entity.User{}, &entity.Blog{}, &entity.Comment{})
 
 	// Create
-	db.Create(&entity.User{Username: "test", Pw: "abc"})
+	pw_testuser, _ := HashPassword("testuser1")
+	db.Create(&entity.User{Username: "testuser", Pw: pw_testuser})
+
+	pw_admin, _ := HashPassword("admin1")
+	db.Create(&entity.User{Username: "admin", Pw: pw_admin})
+
+	pw_gipszjakab, _ := HashPassword("gipszjakab1")
+	db.Create(&entity.User{Username: "gipszjakab", Pw: pw_gipszjakab})
 
 	log.Info("DB created")
 
@@ -79,4 +88,14 @@ func main() {
 	log.Info("Server started")
 
 	log.Fatal(http.ListenAndServe(":8085", router))
+}
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }

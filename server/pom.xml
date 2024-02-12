@@ -58,6 +58,7 @@
 <!-- 								<package>github.com/rogpeppe/godef</package> -->
 								<package>gorm.io/gorm</package>
 								<package>gorm.io/driver/sqlite</package>
+								<package>golang.org/x/crypto/bcrypt</package>
 							</packages>
 						</configuration>
 					</execution>

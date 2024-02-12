@@ -64,7 +64,7 @@ func (s *StatisticsAPIService) GetStatistics(ctx context.Context, days int32) (o
 
 	// Read
 	var user entity.User
-	db.First(&user, "Username = ?", "test") // find
+	db.First(&user, "Username = ?", "admin") // find
 
 	log.WithFields(log.Fields{
 		"user": user,
