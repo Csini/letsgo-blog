@@ -64,6 +64,55 @@ paths:
       summary: Provides statistics about user activity
       tags:
       - Statistics
+  /api/login:
+    post:
+      description: |
+        This endpoint is responsible to user login
+      operationId: postLogin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        description: User and pw.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: Returns a JWT Token
+        "400":
+          content:
+            application/json:
+              example:
+                message: Request cannot be processed because it is syntactically wrong
+                timestamp: 2023-04-20T11:00:00Z
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Syntax error.
+        "401":
+          content:
+            application/json:
+              example:
+                message: Authentication error
+                timestamp: 2023-04-20T11:00:00Z
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Authentication error
+        "500":
+          content:
+            application/json:
+              example:
+                message: Internal server error
+                timestamp: 2023-04-20T11:00:00Z
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: provides JWT token
+      tags:
+      - Authentication
 components:
   responses:
     BadRequestError:
@@ -128,6 +177,20 @@ components:
         amountComment:
           example: 1
           type: integer
+      required:
+      - amountBlog
+      - amountComment
+      - userid
+      type: object
+    LoginRequest:
+      example:
+        pw: pw
+        user: user
+      properties:
+        user:
+          type: string
+        pw:
+          type: string
       type: object
     Error:
       description: Error object

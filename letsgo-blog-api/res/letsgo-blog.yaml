@@ -53,6 +53,34 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /api/login:
+    post:
+      tags:
+        - Authentication
+      summary: provides JWT token
+      description: |
+        This endpoint is responsible to user login
+      operationId: postLogin
+      requestBody:
+        description: User and pw.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        200:
+          description: Returns a JWT Token
+          content:
+            application/json:
+              schema:
+                type: string
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
 components:
   securitySchemes:
     bearerAuth:            # arbitrary name for the security scheme
@@ -114,6 +142,14 @@ components:
         amountComment:
           type: integer
           example: 1
+    LoginRequest:
+      type: object
+      properties:
+        user:
+          type: string
+        pw:
+          type: string
+
     Error:
       type: object
       description: Error object

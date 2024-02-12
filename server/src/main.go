@@ -22,7 +22,7 @@ import (
 	"gorm.io/gorm/logger"
 
 	"config"
-	"golang.org/x/crypto/bcrypt"
+	//"golang.org/x/crypto/bcrypt"
 )
 
 func init() {
@@ -87,16 +87,20 @@ func main() {
 	//
 	//	log.Info("DB created")
 
+	AuthenticationAPIService := impl.NewAuthenticationAPIService()
+	AuthenticationAPIController := openapi.NewAuthenticationAPIController(AuthenticationAPIService)
+
 	StatisticsAPIService := impl.NewStatisticsAPIService()
 	StatisticsAPIController := openapi.NewStatisticsAPIController(StatisticsAPIService)
 
-	router := openapi.NewRouter(StatisticsAPIController)
+	router := openapi.NewRouter(AuthenticationAPIController, StatisticsAPIController)
 
 	log.Info("Server started")
 
 	log.Fatal(http.ListenAndServe(":8085", router))
 }
 
+/*
 func HashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
@@ -106,3 +110,4 @@ func CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
+*/

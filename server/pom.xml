@@ -59,6 +59,7 @@
 								<package>gorm.io/gorm</package>
 								<package>gorm.io/driver/sqlite</package>
 								<package>golang.org/x/crypto/bcrypt</package>
+<!-- 								<package>github.com/golang-jwt/jwt/v5</package> -->
 							</packages>
 						</configuration>
 					</execution>
@@ -184,7 +185,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<executions>
 					<execution>
-						<id>Run goimports</id>
+						<id>Run goimports api_statistics.go</id>
 						<phase>process-sources</phase>
 						<goals>
 							<goal>exec</goal>
@@ -195,6 +196,21 @@
 								<argument>-l</argument>
 								<argument>-w </argument>
 								<argument>${basedir}${file.separator}src/generated/openapi/api_statistics.go</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>Run goimports api_authentication.go</id>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>goimports</executable>
+							<arguments>
+								<argument>-l</argument>
+								<argument>-w </argument>
+								<argument>${basedir}${file.separator}src/generated/openapi/api_authentication.go</argument>
 							</arguments>
 						</configuration>
 					</execution>

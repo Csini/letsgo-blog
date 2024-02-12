@@ -197,11 +197,90 @@ font-style: italic;
 
   <h3>Table of Contents </h3>
   <div class="method-summary"></div>
+  <h4><a href="#Authentication">Authentication</a></h4>
+  <ul>
+  <li><a href="#postLogin"><code><span class="http-method">post</span> /api/login</code></a></li>
+  </ul>
   <h4><a href="#Statistics">Statistics</a></h4>
   <ul>
   <li><a href="#getStatistics"><code><span class="http-method">get</span> /api/statistics/{days}</code></a></li>
   </ul>
 
+  <h1><a name="Authentication">Authentication</a></h1>
+  <div class="method"><a name="postLogin"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /api/login</code></pre></div>
+    <div class="method-summary">provides JWT token (<span class="nickname">postLogin</span>)</div>
+    <div class="method-notes">This endpoint is responsible to user login</div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">LoginRequest <a href="#LoginRequest">LoginRequest</a> (required)</div>
+
+      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+
+    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      
+      String
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "message" : "message",
+  "timestamp" : "timestamp"
+}</code></pre>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "message" : "message",
+  "timestamp" : "timestamp"
+}</code></pre>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "message" : "message",
+  "timestamp" : "timestamp"
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    Returns a JWT Token
+        <a href="#String">String</a>
+    <h4 class="field-label">400</h4>
+    Syntax error.
+        <a href="#Error">Error</a>
+    <h4 class="field-label">401</h4>
+    Authentication error
+        <a href="#Error">Error</a>
+    <h4 class="field-label">500</h4>
+    Internal server error
+        <a href="#Error">Error</a>
+  </div> <!-- method -->
+  <hr/>
   <h1><a name="Statistics">Statistics</a></h1>
   <div class="method"><a name="getStatistics"/>
     <div class="method-path">
@@ -292,6 +371,7 @@ font-style: italic;
   <h3>Table of Contents</h3>
   <ol>
     <li><a href="#Error"><code>Error</code> - </a></li>
+    <li><a href="#LoginRequest"><code>LoginRequest</code> - </a></li>
     <li><a href="#Statistic"><code>Statistic</code> - </a></li>
     <li><a href="#StatisticsResponse"><code>StatisticsResponse</code> - </a></li>
   </ol>
@@ -305,12 +385,20 @@ font-style: italic;
     </div>  <!-- field-items -->
   </div>
   <div class="model">
+    <h3><a name="LoginRequest"><code>LoginRequest</code> - </a> <a class="up" href="#__Models">Up</a></h3>
+    <div class='model-description'></div>
+    <div class="field-items">
+      <div class="param">user (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">pw (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
     <h3><a name="Statistic"><code>Statistic</code> - </a> <a class="up" href="#__Models">Up</a></h3>
     <div class='model-description'></div>
     <div class="field-items">
-      <div class="param">userid (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
-<div class="param">amountBlog (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span>  </div>
-<div class="param">amountComment (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span>  </div>
+      <div class="param">userid </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">amountBlog </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span>  </div>
+<div class="param">amountComment </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span>  </div>
     </div>  <!-- field-items -->
   </div>
   <div class="model">
