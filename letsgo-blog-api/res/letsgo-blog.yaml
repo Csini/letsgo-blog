@@ -100,6 +100,10 @@ components:
             $ref: '#/components/schemas/Statistic'
     Statistic:
       type: object
+      required:  # List the required properties here
+        - userid
+        - amountBlog
+        - amountComment
       properties:
         userid: 
           type: string

@@ -53,9 +53,9 @@
 								<!-- <package>github.com/go-chi/chi/v5</package> -->
 								<package>github.com/gorilla/mux</package>
 								<package>github.com/sirupsen/logrus</package>
-<!-- 								<package>golang.org/x/tools/cmd/goimports</package> -->
-<!-- 								<package>golang.org/x/tools/cmd/guru</package> -->
-<!-- 								<package>github.com/rogpeppe/godef</package> -->
+								<!-- <package>golang.org/x/tools/cmd/goimports</package> -->
+								<!-- <package>golang.org/x/tools/cmd/guru</package> -->
+								<!-- <package>github.com/rogpeppe/godef</package> -->
 								<package>gorm.io/gorm</package>
 								<package>gorm.io/driver/sqlite</package>
 								<package>golang.org/x/crypto/bcrypt</package>
@@ -74,12 +74,12 @@
 					<!-- <tag>v5.0.11</tag> -->
 					<!-- </configuration> -->
 					<!-- </execution> -->
-<!-- 					<execution> -->
-<!-- 						<id>default-test</id> -->
-<!-- 						<configuration> -->
-<!-- 							<skip>true</skip> -->
-<!-- 						</configuration> -->
-<!-- 					</execution> -->
+					<!-- <execution> -->
+					<!-- <id>default-test</id> -->
+					<!-- <configuration> -->
+					<!-- <skip>true</skip> -->
+					<!-- </configuration> -->
+					<!-- </execution> -->
 					<!-- <execution> -->
 					<!-- <id>default-mod</id> -->
 					<!-- <phase>process-resources</phase> -->
@@ -196,6 +196,30 @@
 								<argument>-w </argument>
 								<argument>${basedir}${file.separator}src/generated/openapi/api_statistics.go</argument>
 							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.0.2</version>
+				<executions>
+					<execution>
+						<id>copy-db-resource</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/bin</outputDirectory>
+							<resources>
+								<resource>
+									<directory>res</directory>
+									<includes>
+										<include>letsgo-blog-db.sqlite</include>
+									</includes>
+								</resource>
+							</resources>
 						</configuration>
 					</execution>
 				</executions>

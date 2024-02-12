@@ -16,11 +16,12 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"entity"
+	//"entity"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
+	"config"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -46,7 +47,9 @@ func main() {
 	 }).Info("Temperature changes")*/
 	var err error
 	var db *gorm.DB
-	if db, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{}); err != nil {
+	if db, err = gorm.Open(sqlite.Open(config.DB_NAME), &gorm.Config{
+		PrepareStmt: false,
+	}); err != nil {
 		log.Printf("failed to connect database, got error %v\n", err)
 		os.Exit(1)
 	} else {
@@ -65,20 +68,24 @@ func main() {
 		db.Logger = db.Logger.LogMode(logger.Info)
 	}
 
-	// Migrate the schema
-	db.AutoMigrate(&entity.User{}, &entity.Blog{}, &entity.Comment{})
+	log.Info("DB connected")
 
-	// Create
-	pw_testuser, _ := HashPassword("testuser1")
-	db.Create(&entity.User{Username: "testuser", Pw: pw_testuser})
-
-	pw_admin, _ := HashPassword("admin1")
-	db.Create(&entity.User{Username: "admin", Pw: pw_admin})
-
-	pw_gipszjakab, _ := HashPassword("gipszjakab1")
-	db.Create(&entity.User{Username: "gipszjakab", Pw: pw_gipszjakab})
-
-	log.Info("DB created")
+	//	// Migrate the schema
+	//	db.AutoMigrate(&entity.User{}, &entity.Blog{}, &entity.Comment{})
+	//
+	//	// Create
+	//	pw_testuser, _ := HashPassword("testuser1")
+	//	db.Create(&entity.User{Username: "testuser", Pw: pw_testuser})
+	//
+	//	pw_admin, _ := HashPassword("admin1")
+	//	db.Create(&entity.User{Username: "admin", Pw: pw_admin})
+	//
+	//	pw_gipszjakab, _ := HashPassword("gipszjakab1")
+	//	db.Create(&entity.User{Username: "gipszjakab", Pw: pw_gipszjakab})
+	//
+	//	db.Create(&entity.Blog{User_ID: "gipszjakab", Content: "xxxxxx"})
+	//
+	//	log.Info("DB created")
 
 	StatisticsAPIService := impl.NewStatisticsAPIService()
 	StatisticsAPIController := openapi.NewStatisticsAPIController(StatisticsAPIService)

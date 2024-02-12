@@ -13,13 +13,18 @@ import (
 	"context"
 	"errors"
 	openapi "generated/openapi"
-	"net/http"
+	//"net/http"
 
 	log "github.com/sirupsen/logrus"
 
+	"config"
 	"entity"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+
+	//"slices"
+	//"fmt"
+	"time"
 )
 
 // StatisticsAPIService is a service that implements the logic for the StatisticsAPIServicer
@@ -54,7 +59,10 @@ func (s *StatisticsAPIService) GetStatistics(ctx context.Context, days int32) (o
 		"days": days,
 	}).Info("Statistics called - 2222")
 
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(config.DB_NAME), &gorm.Config{
+
+		PrepareStmt: true,
+	})
 	if err != nil {
 		log.Error(err)
 		return openapi.Response(500, nil), errors.New("GetStatistics failed to connect database")
@@ -63,12 +71,140 @@ func (s *StatisticsAPIService) GetStatistics(ctx context.Context, days int32) (o
 	}
 
 	// Read
-	var user entity.User
-	db.First(&user, "Username = ?", "admin") // find
+	//	var user entity.User
+	//	db.First(&user, "Username = ?", "admin") // find
+	//
+	//	log.WithFields(log.Fields{
+	//		"user": user,
+	//	}).Info("User")
+
+	// Counting distinct values with a custom select
+	//blog_counts := db.Table("blogs").Select("count(id)").Count(&count).Group("userid")
+	// SQL: select user_id, count(id) from blogs group by user_id
+
+	/*
+			// Raw SQL
+		rows, err := db.Raw("select name, age, email from users where name = ?", "jinzhu").Rows()
+		defer rows.Close()
+		for rows.Next() {
+		  rows.Scan(&name, &age, &email)
+
+		  // do something
+		}
+	*/
+
+	//db.Raw("select sum(age) from users where role = ?", "admin").Scan(&age)
+	/*
+		blog_counts, err := db.Raw("select user_id, count(id) from blogs group by user_id").Rows()
+
+		defer blog_counts.Close()
+		for blog_counts.Next() {
+			var results []map[string]interface{}
+			blog_counts.Scan(&results)
+			log.Info(results)
+
+			// do something
+		}
+	*/
+
+	today := time.Now()
+	//var minusdays int
+	//minusdays = -1 * int(days.(int32))
+	//beforeThisDate := today.AddDate(0, 0, minusdays)
+
+	//midnight
+	beforeThisDate := time.Date(today.Year(), today.Month(), today.Day()-int(days), 0, 0, 0, 0, today.Location())
 
 	log.WithFields(log.Fields{
-		"user": user,
-	}).Info("User")
+		"beforeThisDate": beforeThisDate,
+	}).Info("calculated")
 
-	return openapi.Response(http.StatusNotImplemented, nil), errors.New("GetStatistics method not implemented")
+	/*
+		type CustomRawResult struct {
+			username []rune
+			amount   int32
+		}
+	*/
+	//var blog_results []CustomRawResult
+	var blog_results []map[string]interface{}
+	// Where("updated_at > ?", lastWeek)
+	db.Raw("select user_id as username, count(id) as amount from blogs WHERE created_at > ? group by user_id", beforeThisDate).Scan(&blog_results)
+
+	log.Info(blog_results)
+
+	var comment_results []map[string]interface{}
+	//var comment_results []CustomRawResult
+	db.Raw("select user_id as username, count(id) as amount from comments WHERE created_at > ? group by user_id", beforeThisDate).Scan(&comment_results)
+
+	log.Info(comment_results)
+
+	//TODO merge the two results with list of all users and send back as a list of Statistic
+
+	var users []entity.User
+	// Get all records
+	db.Find(&users)
+	// SELECT * FROM users;
+	//result.RowsAffected // returns found records count, equals `len(users)`
+	//result.Error        // returns error
+
+	var statistics openapi.StatisticsResponse
+
+	// using for loop
+	for _, element := range users {
+
+		log.Debug(element.Username)
+		//names = slices.Insert(names, 1, "Bill", "Billie")
+		//statistics.Items = slices.Insert(statistics.Items,
+		//statistic{userid: element.Username})
+
+		var amountBlog int32
+		var amountComment int32
+
+		for _, blog_result := range blog_results {
+			log.Info(blog_result["username"])
+			if blog_result["username"] == element.Username {
+				log.Info(blog_result["amount"])
+				//TODO
+				//amountBlog = blog_result.amount
+				break
+			}
+		}
+
+		for _, comment_result := range comment_results {
+			log.Info(comment_result["username"])
+			if comment_result["username"] == element.Username {
+				log.Info(comment_result["amount"])
+				//TODO
+				//amountComment = comment_result["amount"].(*int)
+				break
+			}
+		}
+
+		/*
+			if count_blog, ok := blog_results[element.Username].(string); ok {
+				statistic.AmountBlog = count_blog
+			} else {
+				statistic.AmountBlog = 0
+			}
+
+			if count_comment, ok := comment_results[element.Username].(string); ok {
+				statistic.AmountComment = count_comment
+			} else {
+				statistic.AmountComment = 0
+			}
+		*/
+
+		statistic := openapi.Statistic{Userid: element.Username, AmountBlog: amountBlog, AmountComment: amountComment}
+
+		//output = append(output, input[index])
+		statistics.Items = append(statistics.Items,
+			statistic)
+	}
+
+	//TODO
+	//statistics.Size = len(statistics.Items)
+
+	return openapi.Response(200, statistics), nil
+
+	//	return openapi.Response(http.StatusNotImplemented, nil), errors.New("GetStatistics method not implemented")
 }
