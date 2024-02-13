@@ -10,13 +10,23 @@
 package openapi
 
 type LoginRequest struct {
-	User string `json:"user,omitempty"`
+	User string `json:"user"`
 
-	Pw string `json:"pw,omitempty"`
+	Pw string `json:"pw"`
 }
 
 // AssertLoginRequestRequired checks if the required fields are not zero-ed
 func AssertLoginRequestRequired(obj LoginRequest) error {
+	elements := map[string]interface{}{
+		"user": obj.User,
+		"pw":   obj.Pw,
+	}
+	for name, el := range elements {
+		if isZero := IsZeroValue(el); isZero {
+			return &RequiredError{Field: name}
+		}
+	}
+
 	return nil
 }
 

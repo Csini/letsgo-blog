@@ -66,7 +66,7 @@ func (s *AuthenticationAPIService) PostLogin(ctx context.Context, loginRequest o
 	}
 
 	var user entity.User
-	// Get all records
+	// Get
 	db.First(&user, loginRequest.User)
 
 	if CheckPasswordHash(loginRequest.Pw, user.Pw) {

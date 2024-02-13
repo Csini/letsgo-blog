@@ -113,6 +113,73 @@ paths:
       summary: provides JWT token
       tags:
       - Authentication
+  /api/comment/{blogid}:
+    post:
+      description: |
+        This endpoint is responsible to save new Comments
+      operationId: postComment
+      parameters:
+      - description: which blog belongs the comment
+        explode: false
+        in: path
+        name: blogid
+        required: true
+        schema:
+          type: integer
+        style: simple
+      - explode: false
+        in: header
+        name: Authorization
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+        description: Comment to be persisted.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: integer
+          description: Returns the persised Comment id
+        "400":
+          content:
+            application/json:
+              example:
+                message: Request cannot be processed because it is syntactically wrong
+                timestamp: 2023-04-20T11:00:00Z
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Syntax error.
+        "401":
+          content:
+            application/json:
+              example:
+                message: Authentication error
+                timestamp: 2023-04-20T11:00:00Z
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Authentication error
+        "500":
+          content:
+            application/json:
+              example:
+                message: Internal server error
+                timestamp: 2023-04-20T11:00:00Z
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      security:
+      - bearerAuth: []
+      summary: Saves a new Comment
+      tags:
+      - Comment
 components:
   responses:
     BadRequestError:
@@ -191,6 +258,18 @@ components:
           type: string
         pw:
           type: string
+      required:
+      - pw
+      - user
+      type: object
+    CommentRequest:
+      example:
+        content: content
+      properties:
+        content:
+          type: string
+      required:
+      - content
       type: object
     Error:
       description: Error object

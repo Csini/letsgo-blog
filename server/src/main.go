@@ -90,10 +90,13 @@ func main() {
 	AuthenticationAPIService := impl.NewAuthenticationAPIService()
 	AuthenticationAPIController := openapi.NewAuthenticationAPIController(AuthenticationAPIService)
 
+	CommentAPIService := impl.NewCommentAPIService()
+	CommentAPIController := openapi.NewCommentAPIController(CommentAPIService)
+
 	StatisticsAPIService := impl.NewStatisticsAPIService()
 	StatisticsAPIController := openapi.NewStatisticsAPIController(StatisticsAPIService)
 
-	router := openapi.NewRouter(AuthenticationAPIController, StatisticsAPIController)
+	router := openapi.NewRouter(AuthenticationAPIController, CommentAPIController, StatisticsAPIController)
 
 	log.Info("Server started")
 

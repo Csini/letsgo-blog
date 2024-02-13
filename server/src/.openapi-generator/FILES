@@ -2,11 +2,13 @@ README.md
 api/openapi.yaml
 generated/openapi/api.go
 generated/openapi/api_authentication.go
+generated/openapi/api_comment.go
 generated/openapi/api_statistics.go
 generated/openapi/error.go
 generated/openapi/helpers.go
 generated/openapi/impl.go
 generated/openapi/logger.go
+generated/openapi/model_comment_request.go
 generated/openapi/model_error.go
 generated/openapi/model_login_request.go
 generated/openapi/model_statistic.go

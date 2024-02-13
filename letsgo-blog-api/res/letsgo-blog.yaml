@@ -81,6 +81,48 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         500:
           $ref: '#/components/responses/InternalServerError'
+  /api/comment/{blogid}:
+    post:
+      tags:
+        - Comment
+      summary: Saves a new Comment
+      description: |
+        This endpoint is responsible to save new Comments
+      operationId: postComment
+      parameters:
+        - in: path
+          name: blogid
+          required: true
+          schema:
+            type: integer
+          description: which blog belongs the comment
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Comment to be persisted.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+      responses:
+        200:
+          description: Returns the persised Comment id
+          content:
+            application/json:
+              schema:
+               type: integer
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
 components:
   securitySchemes:
     bearerAuth:            # arbitrary name for the security scheme
@@ -144,12 +186,21 @@ components:
           example: 1
     LoginRequest:
       type: object
+      required:  # List the required properties here
+        - user
+        - pw
       properties:
         user:
           type: string
         pw:
           type: string
-
+    CommentRequest:
+      type: object
+      required:  # List the required properties here
+        - content
+      properties:
+        content:
+          type: string
     Error:
       type: object
       description: Error object
