@@ -105,7 +105,7 @@ func checkPasswordHash(password, hash string) bool {
 }
 
 func generateJWT(username string) (string, error) {
-	token := jwt.New(jwt.SigningMethodEdDSA)
+	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["exp"] = time.Now().Add(10 * time.Minute)
 	claims["authorized"] = true
