@@ -404,14 +404,19 @@ font-style: italic;
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/json</div>
     <pre class="example"><code>{
+  "beforeThisDate" : "2021-01-30T08:30:00Z",
   "size" : 1,
   "items" : [ {
-    "amountBlog" : 1,
-    "amountComment" : 1,
+    "amount" : {
+      "comment" : 1,
+      "blog" : 1
+    },
     "userid" : "617a6118-a641-42f7-a3a5-5d6ff85b5654"
   }, {
-    "amountBlog" : 1,
-    "amountComment" : 1,
+    "amount" : {
+      "comment" : 1,
+      "blog" : 1
+    },
     "userid" : "617a6118-a641-42f7-a3a5-5d6ff85b5654"
   } ]
 }</code></pre>
@@ -462,6 +467,7 @@ font-style: italic;
 
   <h3>Table of Contents</h3>
   <ol>
+    <li><a href="#Amount"><code>Amount</code> - </a></li>
     <li><a href="#CommentRequest"><code>CommentRequest</code> - </a></li>
     <li><a href="#Error"><code>Error</code> - </a></li>
     <li><a href="#LoginRequest"><code>LoginRequest</code> - </a></li>
@@ -469,6 +475,14 @@ font-style: italic;
     <li><a href="#StatisticsResponse"><code>StatisticsResponse</code> - </a></li>
   </ol>
 
+  <div class="model">
+    <h3><a name="Amount"><code>Amount</code> - </a> <a class="up" href="#__Models">Up</a></h3>
+    <div class='model-description'></div>
+    <div class="field-items">
+      <div class="param">blog </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span>  </div>
+<div class="param">comment </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
   <div class="model">
     <h3><a name="CommentRequest"><code>CommentRequest</code> - </a> <a class="up" href="#__Models">Up</a></h3>
     <div class='model-description'></div>
@@ -497,8 +511,7 @@ font-style: italic;
     <div class='model-description'></div>
     <div class="field-items">
       <div class="param">userid </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
-<div class="param">amountBlog </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span>  </div>
-<div class="param">amountComment </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span>  </div>
+<div class="param">amount </div><div class="param-desc"><span class="param-type"><a href="#">Amount</a></span>  </div>
     </div>  <!-- field-items -->
   </div>
   <div class="model">
@@ -506,6 +519,7 @@ font-style: italic;
     <div class='model-description'></div>
     <div class="field-items">
       <div class="param">size (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span>  </div>
+<div class="param">beforeThisDate (optional)</div><div class="param-desc"><span class="param-type"><a href="#DateTime">Date</a></span>  format: date-time</div>
 <div class="param">items (optional)</div><div class="param-desc"><span class="param-type"><a href="#Statistic">array[Statistic]</a></span>  </div>
     </div>  <!-- field-items -->
   </div>

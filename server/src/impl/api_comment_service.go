@@ -45,7 +45,7 @@ func (s *CommentAPIService) PostComment(ctx context.Context, blogid int32, autho
 		return openapi.Response(401, nil), errors.New("PostComment not autherized")
 	}
 
-	db, err := gorm.Open(sqlite.Open(config.DB_NAME), &gorm.Config{
+	db, err := gorm.Open(sqlite.Open(config.GetDbName()), &gorm.Config{
 
 		PrepareStmt: false,
 	})
@@ -54,6 +54,8 @@ func (s *CommentAPIService) PostComment(ctx context.Context, blogid int32, autho
 		return openapi.Response(500, nil), errors.New("PostComment failed to connect database")
 	} else {
 		log.Info("yuhuuuuu")
+		//sqlite
+		db.Exec("PRAGMA foreign_keys = ON")
 	}
 
 	//check blog user_id == comment userid

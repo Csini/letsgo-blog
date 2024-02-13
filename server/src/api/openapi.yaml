@@ -212,18 +212,25 @@ components:
   schemas:
     StatisticsResponse:
       example:
+        beforeThisDate: 2021-01-30T08:30:00Z
         size: 1
         items:
-        - amountBlog: 1
-          amountComment: 1
+        - amount:
+            comment: 1
+            blog: 1
           userid: 617a6118-a641-42f7-a3a5-5d6ff85b5654
-        - amountBlog: 1
-          amountComment: 1
+        - amount:
+            comment: 1
+            blog: 1
           userid: 617a6118-a641-42f7-a3a5-5d6ff85b5654
       properties:
         size:
           example: 1
           type: integer
+        beforeThisDate:
+          example: 2021-01-30T08:30:00Z
+          format: date-time
+          type: string
         items:
           items:
             $ref: '#/components/schemas/Statistic'
@@ -231,23 +238,34 @@ components:
       type: object
     Statistic:
       example:
-        amountBlog: 1
-        amountComment: 1
+        amount:
+          comment: 1
+          blog: 1
         userid: 617a6118-a641-42f7-a3a5-5d6ff85b5654
       properties:
         userid:
           example: 617a6118-a641-42f7-a3a5-5d6ff85b5654
           type: string
-        amountBlog:
+        amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - amount
+      - userid
+      type: object
+    Amount:
+      example:
+        comment: 1
+        blog: 1
+      properties:
+        blog:
           example: 1
           type: integer
-        amountComment:
+        comment:
           example: 1
           type: integer
       required:
-      - amountBlog
-      - amountComment
-      - userid
+      - blog
+      - comment
       type: object
     LoginRequest:
       example:

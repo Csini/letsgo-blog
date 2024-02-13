@@ -45,7 +45,7 @@ func (s *StatisticsAPIService) GetStatistics(ctx context.Context, days int32) (o
 		"days": days,
 	}).Info("Statistics called")
 
-	db, err := gorm.Open(sqlite.Open(config.DB_NAME), &gorm.Config{
+	db, err := gorm.Open(sqlite.Open(config.GetDbName()), &gorm.Config{
 
 		PrepareStmt: true,
 	})
@@ -54,6 +54,8 @@ func (s *StatisticsAPIService) GetStatistics(ctx context.Context, days int32) (o
 		return openapi.Response(500, nil), errors.New("GetStatistics failed to connect database")
 	} else {
 		log.Info("yuhuuuuu")
+		//sqlite
+		db.Exec("PRAGMA foreign_keys = ON")
 	}
 
 	today := time.Now()
@@ -65,26 +67,53 @@ func (s *StatisticsAPIService) GetStatistics(ctx context.Context, days int32) (o
 		"beforeThisDate": beforeThisDate,
 	}).Info("calculated")
 
-	/*
-		type CustomRawResult struct {
-			username []rune
-			amount   int32
-		}
-	*/
-	//var blog_results []CustomRawResult
-	var blog_results []map[string]interface{}
+	var statistics openapi.StatisticsResponse
+
+	statistics.BeforeThisDate = beforeThisDate
+
+	type CustomRawResult struct {
+		username string
+		amount   int32
+	}
+
+	var blog_results []CustomRawResult
+	//var blog_results []map[string]interface{}
 	// Where("updated_at > ?", lastWeek)
-	db.Raw("select user_id as username, count(id) as amount from blogs WHERE created_at > ? group by user_id", beforeThisDate).Scan(&blog_results)
+	//db.Raw("select user_id as username, count(id) as amount from blogs WHERE created_at > ? group by user_id", beforeThisDate).Scan(&blog_results)
+	//db.Table("blogs").Select("user_id as username, count(id) as amount").Where("created_at > ?", beforeThisDate).Group("user_id").Find(&blog_results)
 
-	log.Info(blog_results)
+	var comment_results []CustomRawResult
+	//var comment_results []map[string]interface{}
+	//db.Raw("select user_id as username, count(id) as amount from comments WHERE created_at > ? group by user_id", beforeThisDate).Scan(&comment_results)
 
-	var comment_results []map[string]interface{}
-	//var comment_results []CustomRawResult
-	db.Raw("select user_id as username, count(id) as amount from comments WHERE created_at > ? group by user_id", beforeThisDate).Scan(&comment_results)
+	// Raw SQL
+	blog_rows, err := db.Raw("select user_id as username, count(id) as amount from blogs WHERE created_at > ? group by user_id", beforeThisDate).Rows()
+	defer blog_rows.Close()
+	for blog_rows.Next() {
+		var username string
+		var amount int32
+		blog_rows.Scan(&username, &amount)
 
-	log.Info(comment_results)
+		blog_row := CustomRawResult{username: username, amount: amount}
+		blog_results = append(blog_results,
+			blog_row)
+	}
+	log.Debug(blog_results)
 
-	//TODO merge the two results with list of all users and send back as a list of Statistic
+	comment_rows, err := db.Raw("select user_id as username, count(id) as amount from comments WHERE created_at > ? group by user_id", beforeThisDate).Rows()
+	defer comment_rows.Close()
+	for comment_rows.Next() {
+		var username string
+		var amount int32
+		comment_rows.Scan(&username, &amount)
+
+		comment_row := CustomRawResult{username: username, amount: amount}
+		comment_results = append(blog_results,
+			comment_row)
+	}
+	log.Debug(comment_results)
+
+	//merge the two results with list of all users and send back as a list of Statistic
 
 	var users []entity.User
 	// Get all records
@@ -93,44 +122,44 @@ func (s *StatisticsAPIService) GetStatistics(ctx context.Context, days int32) (o
 	//result.RowsAffected // returns found records count, equals `len(users)`
 	//result.Error        // returns error
 
-	var statistics openapi.StatisticsResponse
-
 	// using for loop
 	for _, element := range users {
 
-		log.Debug(element.Username)
+		//log.Debug(element.Username)
 
 		var amountBlog int32
 		var amountComment int32
 
 		for _, blog_result := range blog_results {
-			log.Info(blog_result["username"])
-			if blog_result["username"] == element.Username {
-				log.Info(blog_result["amount"])
-				//TODO
-				//amountBlog = blog_result.amount
+			if blog_result.username == element.Username {
+				log.WithFields(log.Fields{
+					"blog_result.amount":   blog_result.amount,
+					"blog_result.username": blog_result.username,
+				}).Info(element.Username)
+				amountBlog = blog_result.amount
 				break
 			}
 		}
 
 		for _, comment_result := range comment_results {
-			log.Info(comment_result["username"])
-			if comment_result["username"] == element.Username {
-				log.Info(comment_result["amount"])
-				//TODO
-				//amountComment = comment_result["amount"].(*int)
+			if comment_result.username == element.Username {
+				log.WithFields(log.Fields{
+					"comment_result.amount":   comment_result.amount,
+					"comment_result.username": comment_result.username,
+				}).Info(element.Username)
+				amountComment = comment_result.amount
 				break
 			}
 		}
 
-		statistic := openapi.Statistic{Userid: element.Username, AmountBlog: amountBlog, AmountComment: amountComment}
+		amountObject := openapi.Amount{Blog: amountBlog, Comment: amountComment}
+		statistic := openapi.Statistic{Userid: element.Username, Amount: amountObject}
 
 		statistics.Items = append(statistics.Items,
 			statistic)
 	}
 
-	//TODO
-	//statistics.Size = len(statistics.Items)
+	statistics.Size = int32(len(statistics.Items))
 
 	return openapi.Response(200, statistics), nil
 

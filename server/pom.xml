@@ -59,7 +59,9 @@
 								<package>gorm.io/gorm</package>
 								<package>gorm.io/driver/sqlite</package>
 								<package>golang.org/x/crypto/bcrypt</package>
-<!-- 								<package>github.com/golang-jwt/jwt/v5</package> -->
+								<!-- <package>github.com/golang-jwt/jwt/v5</package> -->
+								<package>github.com/golang-jwt/jwt</package>
+								<package>github.com/joho/godotenv</package>
 							</packages>
 						</configuration>
 					</execution>
@@ -233,6 +235,24 @@
 									<directory>res</directory>
 									<includes>
 										<include>letsgo-blog-db.sqlite</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-env-resource</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/bin</outputDirectory>
+							<resources>
+								<resource>
+									<directory>res</directory>
+									<includes>
+										<include>letsgo-blog.env</include>
 									</includes>
 								</resource>
 							</resources>

@@ -9,8 +9,14 @@
 
 package openapi
 
+import (
+	"time"
+)
+
 type StatisticsResponse struct {
 	Size int32 `json:"size,omitempty"`
+
+	BeforeThisDate time.Time `json:"beforeThisDate,omitempty"`
 
 	Items []Statistic `json:"items,omitempty"`
 }

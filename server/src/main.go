@@ -47,7 +47,7 @@ func main() {
 	 }).Info("Temperature changes")*/
 	var err error
 	var db *gorm.DB
-	if db, err = gorm.Open(sqlite.Open(config.DB_NAME), &gorm.Config{
+	if db, err = gorm.Open(sqlite.Open(config.GetDbName()), &gorm.Config{
 		PrepareStmt: false,
 	}); err != nil {
 		log.Printf("failed to connect database, got error %v\n", err)

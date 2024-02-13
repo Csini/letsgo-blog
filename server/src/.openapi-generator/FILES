@@ -8,6 +8,7 @@ generated/openapi/error.go
 generated/openapi/helpers.go
 generated/openapi/impl.go
 generated/openapi/logger.go
+generated/openapi/model_amount.go
 generated/openapi/model_comment_request.go
 generated/openapi/model_error.go
 generated/openapi/model_login_request.go

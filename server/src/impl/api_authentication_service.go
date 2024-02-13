@@ -54,7 +54,7 @@ func (s *AuthenticationAPIService) PostLogin(ctx context.Context, loginRequest o
 	// TODO: Uncomment the next line to return response Response(500, Error{}) or use other options such as http.Ok ...
 	// return Response(500, Error{}), nil
 
-	db, err := gorm.Open(sqlite.Open(config.DB_NAME), &gorm.Config{
+	db, err := gorm.Open(sqlite.Open(config.GetDbName()), &gorm.Config{
 
 		PrepareStmt: false,
 	})
@@ -63,6 +63,8 @@ func (s *AuthenticationAPIService) PostLogin(ctx context.Context, loginRequest o
 		return openapi.Response(500, nil), errors.New("PostLogin failed to connect database")
 	} else {
 		log.Info("yuhuuuuu")
+		//sqlite
+		db.Exec("PRAGMA foreign_keys = ON")
 	}
 
 	var user entity.User

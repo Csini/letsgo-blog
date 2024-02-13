@@ -12,17 +12,14 @@ package openapi
 type Statistic struct {
 	Userid string `json:"userid"`
 
-	AmountBlog int32 `json:"amountBlog"`
-
-	AmountComment int32 `json:"amountComment"`
+	Amount Amount `json:"amount"`
 }
 
 // AssertStatisticRequired checks if the required fields are not zero-ed
 func AssertStatisticRequired(obj Statistic) error {
 	elements := map[string]interface{}{
-		"userid":        obj.Userid,
-		"amountBlog":    obj.AmountBlog,
-		"amountComment": obj.AmountComment,
+		"userid": obj.Userid,
+		"amount": obj.Amount,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {

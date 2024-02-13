@@ -164,6 +164,10 @@ components:
         size:
           type: integer
           example: 1
+        beforeThisDate:
+          type: string
+          format: date-time
+          example: "2021-01-30T08:30:00Z"
         items:
           type: array
           items:
@@ -172,18 +176,26 @@ components:
       type: object
       required:  # List the required properties here
         - userid
-        - amountBlog
-        - amountComment
+        - amount
       properties:
         userid: 
           type: string
           example: 617a6118-a641-42f7-a3a5-5d6ff85b5654
-        amountBlog:
+        amount:
+          type: object
+          $ref: '#/components/schemas/Amount'
+    Amount:
+      type: object
+      required:  # List the required properties here
+        - blog
+        - comment
+      properties:
+        blog:
           type: integer
           example: 1
-        amountComment:
+        comment:
           type: integer
-          example: 1
+          example: 1 
     LoginRequest:
       type: object
       required:  # List the required properties here
