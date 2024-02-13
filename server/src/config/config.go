@@ -10,7 +10,7 @@ func GetDbName() string {
 	return get("DB_NAME")
 }
 
-func GetSecterKey() []byte {
+func GetSecretKey() []byte {
 	return []byte(get("SECRET_KEY"))
 }
 

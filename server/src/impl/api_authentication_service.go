@@ -24,6 +24,9 @@ import (
 	"gorm.io/gorm"
 
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/golang-jwt/jwt"
+	"time"
 )
 
 // AuthenticationAPIService is a service that implements the logic for the AuthenticationAPIServicer
@@ -69,34 +72,49 @@ func (s *AuthenticationAPIService) PostLogin(ctx context.Context, loginRequest o
 
 	var user entity.User
 	// Get
-	db.First(&user, loginRequest.User)
-
-	if CheckPasswordHash(loginRequest.Pw, user.Pw) {
-
-		// TODO
-		//		var (
-		//			key *ecdsa.PrivateKey
-		//			t   *jwt.Token
-		//			s   string
-		//		  )
-		//
-		//		  key = /* Load key from somewhere, for example a file */
-		//		  t = jwt.New(jwt.SigningMethodES256)
-		//		  s = t.SignedString(key)
-		//		return s
-
-		return openapi.Response(200, "TODO jwt token"), nil
+	result := db.Table("users").Select("username, pw").Where("username=?", loginRequest.User).Scan(&user)
+	//result.RowsAffected // returns found records count, equals `len(users)`
+	//result.Error        // returns error
+	if result.Error != nil {
+		return openapi.Response(401, nil), errors.New("PostLogin - bad User or pw")
 	}
 
-	return openapi.Response(401, nil), errors.New("PostLogin - bad User oder pw")
+	if checkPasswordHash(loginRequest.Pw, user.Pw) {
+
+		token, err := generateJWT(user.Username)
+
+		if err != nil {
+			log.Error(err)
+			return openapi.Response(401, nil), errors.New("PostLogin - Token generation error")
+		}
+
+		return openapi.Response(200, token), nil
+	}
+
+	return openapi.Response(401, nil), errors.New("PostLogin - bad User or pw")
 }
 
-func HashPassword(password string) (string, error) {
+func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
 }
 
-func CheckPasswordHash(password, hash string) bool {
+func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
+}
+
+func generateJWT(username string) (string, error) {
+	token := jwt.New(jwt.SigningMethodEdDSA)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["exp"] = time.Now().Add(10 * time.Minute)
+	claims["authorized"] = true
+	claims["user"] = username
+
+	tokenString, err := token.SignedString(config.GetSecretKey())
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
 }
