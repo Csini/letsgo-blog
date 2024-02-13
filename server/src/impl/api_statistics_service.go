@@ -40,24 +40,10 @@ func NewStatisticsAPIService() openapi.StatisticsAPIServicer {
 
 // GetStatistics - Provides statistics about user activity
 func (s *StatisticsAPIService) GetStatistics(ctx context.Context, days int32) (openapi.ImplResponse, error) {
-	// TODO - update GetStatistics with the required logic for this service method.
-	// Add api_statistics_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	// TODO: Uncomment the next line to return response Response(200, StatisticsResponse{}) or use other options such as http.Ok ...
-	// return Response(200, StatisticsResponse{}), nil
-
-	// TODO: Uncomment the next line to return response Response(400, Error{}) or use other options such as http.Ok ...
-	// return Response(400, Error{}), nil
-
-	// TODO: Uncomment the next line to return response Response(500, Error{}) or use other options such as http.Ok ...
-	// return Response(500, Error{}), nil
-
-	// TODO: Uncomment the next line to return response Response(0, Error{}) or use other options such as http.Ok ...
-	// return Response(0, Error{}), nil
 
 	log.WithFields(log.Fields{
 		"days": days,
-	}).Info("Statistics called - 2222")
+	}).Info("Statistics called")
 
 	db, err := gorm.Open(sqlite.Open(config.DB_NAME), &gorm.Config{
 
@@ -70,47 +56,7 @@ func (s *StatisticsAPIService) GetStatistics(ctx context.Context, days int32) (o
 		log.Info("yuhuuuuu")
 	}
 
-	// Read
-	//	var user entity.User
-	//	db.First(&user, "Username = ?", "admin") // find
-	//
-	//	log.WithFields(log.Fields{
-	//		"user": user,
-	//	}).Info("User")
-
-	// Counting distinct values with a custom select
-	//blog_counts := db.Table("blogs").Select("count(id)").Count(&count).Group("userid")
-	// SQL: select user_id, count(id) from blogs group by user_id
-
-	/*
-			// Raw SQL
-		rows, err := db.Raw("select name, age, email from users where name = ?", "jinzhu").Rows()
-		defer rows.Close()
-		for rows.Next() {
-		  rows.Scan(&name, &age, &email)
-
-		  // do something
-		}
-	*/
-
-	//db.Raw("select sum(age) from users where role = ?", "admin").Scan(&age)
-	/*
-		blog_counts, err := db.Raw("select user_id, count(id) from blogs group by user_id").Rows()
-
-		defer blog_counts.Close()
-		for blog_counts.Next() {
-			var results []map[string]interface{}
-			blog_counts.Scan(&results)
-			log.Info(results)
-
-			// do something
-		}
-	*/
-
 	today := time.Now()
-	//var minusdays int
-	//minusdays = -1 * int(days.(int32))
-	//beforeThisDate := today.AddDate(0, 0, minusdays)
 
 	//midnight
 	beforeThisDate := time.Date(today.Year(), today.Month(), today.Day()-int(days), 0, 0, 0, 0, today.Location())
@@ -153,9 +99,6 @@ func (s *StatisticsAPIService) GetStatistics(ctx context.Context, days int32) (o
 	for _, element := range users {
 
 		log.Debug(element.Username)
-		//names = slices.Insert(names, 1, "Bill", "Billie")
-		//statistics.Items = slices.Insert(statistics.Items,
-		//statistic{userid: element.Username})
 
 		var amountBlog int32
 		var amountComment int32
@@ -180,23 +123,8 @@ func (s *StatisticsAPIService) GetStatistics(ctx context.Context, days int32) (o
 			}
 		}
 
-		/*
-			if count_blog, ok := blog_results[element.Username].(string); ok {
-				statistic.AmountBlog = count_blog
-			} else {
-				statistic.AmountBlog = 0
-			}
-
-			if count_comment, ok := comment_results[element.Username].(string); ok {
-				statistic.AmountComment = count_comment
-			} else {
-				statistic.AmountComment = 0
-			}
-		*/
-
 		statistic := openapi.Statistic{Userid: element.Username, AmountBlog: amountBlog, AmountComment: amountComment}
 
-		//output = append(output, input[index])
 		statistics.Items = append(statistics.Items,
 			statistic)
 	}
@@ -206,5 +134,4 @@ func (s *StatisticsAPIService) GetStatistics(ctx context.Context, days int32) (o
 
 	return openapi.Response(200, statistics), nil
 
-	//	return openapi.Response(http.StatusNotImplemented, nil), errors.New("GetStatistics method not implemented")
 }

@@ -37,20 +37,6 @@ func NewCommentAPIService() openapi.CommentAPIServicer {
 
 // PostComment - Saves a new Comment
 func (s *CommentAPIService) PostComment(ctx context.Context, blogid int32, authorization string, commentRequest openapi.CommentRequest) (openapi.ImplResponse, error) {
-	// TODO - update PostComment with the required logic for this service method.
-	// Add api_comment_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	// TODO: Uncomment the next line to return response Response(200, int32{}) or use other options such as http.Ok ...
-	// return Response(200, int32{}), nil
-
-	// TODO: Uncomment the next line to return response Response(400, Error{}) or use other options such as http.Ok ...
-	// return Response(400, Error{}), nil
-
-	// TODO: Uncomment the next line to return response Response(401, Error{}) or use other options such as http.Ok ...
-	// return Response(401, Error{}), nil
-
-	// TODO: Uncomment the next line to return response Response(500, Error{}) or use other options such as http.Ok ...
-	// return Response(500, Error{}), nil
 
 	//TODO check jwt token in authorization and get userid from it
 	userid := "testuser"
@@ -88,8 +74,4 @@ func (s *CommentAPIService) PostComment(ctx context.Context, blogid int32, autho
 
 	// returns inserted data's primary key
 	return openapi.Response(200, comment.ID), nil
-	//result.Error        // returns error
-	//result.RowsAffected // returns inserted records count
-
-	//return openapi.Response(http.StatusNotImplemented, nil), errors.New("PostComment method not implemented")
 }

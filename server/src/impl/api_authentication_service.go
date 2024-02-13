@@ -71,6 +71,7 @@ func (s *AuthenticationAPIService) PostLogin(ctx context.Context, loginRequest o
 
 	if CheckPasswordHash(loginRequest.Pw, user.Pw) {
 
+		// TODO
 		//		var (
 		//			key *ecdsa.PrivateKey
 		//			t   *jwt.Token
