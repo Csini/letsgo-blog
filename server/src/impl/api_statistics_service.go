@@ -11,16 +11,15 @@ package impl
 
 import (
 	"context"
-	"errors"
-	openapi "generated/openapi"
 	//"net/http"
 
 	log "github.com/sirupsen/logrus"
 
-	"config"
 	"entity"
-	"gorm.io/driver/sqlite"
+	openapi "generated/openapi"
+
 	"gorm.io/gorm"
+	utils_db "utils/db"
 
 	//"slices"
 	//"fmt"
@@ -45,17 +44,15 @@ func (s *StatisticsAPIService) GetStatistics(ctx context.Context, days int32) (o
 		"days": days,
 	}).Info("Statistics called")
 
-	db, err := gorm.Open(sqlite.Open(config.GetDbName()), &gorm.Config{
+	var gormconfig = &gorm.Config{
 
 		PrepareStmt: true,
-	})
+	}
+
+	db, err := utils_db.OpenConnection(gormconfig)
+
 	if err != nil {
-		log.Error(err)
-		return openapi.Response(500, nil), errors.New("GetStatistics failed to connect database")
-	} else {
-		log.Info("yuhuuuuu")
-		//sqlite
-		db.Exec("PRAGMA foreign_keys = ON")
+		return openapi.Response(500, nil), err
 	}
 
 	today := time.Now()

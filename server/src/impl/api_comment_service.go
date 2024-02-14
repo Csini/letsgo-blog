@@ -16,12 +16,11 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"entity"
 	openapi "generated/openapi"
 
-	"config"
-	"entity"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	utils_db "utils/db"
 
 	utils_jwt "utils/jwt"
 )
@@ -56,17 +55,15 @@ func (s *CommentAPIService) PostComment(ctx context.Context, blogid int32, autho
 		return openapi.Response(401, nil), userid_err //errors.New("PostComment not autherized")
 	}
 
-	db, err := gorm.Open(sqlite.Open(config.GetDbName()), &gorm.Config{
+	var gormconfig = &gorm.Config{
 
 		PrepareStmt: false,
-	})
+	}
+
+	db, err := utils_db.OpenConnection(gormconfig)
+
 	if err != nil {
-		log.Error(err)
-		return openapi.Response(500, nil), errors.New("PostComment failed to connect database")
-	} else {
-		log.Info("yuhuuuuu")
-		//sqlite
-		db.Exec("PRAGMA foreign_keys = ON")
+		return openapi.Response(500, nil), err
 	}
 
 	//check blog user_id == comment userid

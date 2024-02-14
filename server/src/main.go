@@ -17,11 +17,9 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	//"entity"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 
-	"config"
+	"gorm.io/gorm"
+	utils_db "utils/db"
 	//"golang.org/x/crypto/bcrypt"
 )
 
@@ -45,11 +43,14 @@ func main() {
 		 "prefix":      "sensor",
 		 "temperature": -4,
 	 }).Info("Temperature changes")*/
-	var err error
-	var db *gorm.DB
-	if db, err = gorm.Open(sqlite.Open(config.GetDbName()), &gorm.Config{
+	var gormconfig = &gorm.Config{
+
 		PrepareStmt: false,
-	}); err != nil {
+	}
+
+	db, err := utils_db.OpenConnection(gormconfig)
+
+	if err != nil {
 		log.Printf("failed to connect database, got error %v\n", err)
 		os.Exit(1)
 	} else {
@@ -60,12 +61,8 @@ func main() {
 
 		if err != nil {
 			log.Printf("failed to connect database, got error %v\n", err)
+			os.Exit(1)
 		}
-
-		//sqlite
-		db.Exec("PRAGMA foreign_keys = ON")
-
-		db.Logger = db.Logger.LogMode(logger.Info)
 	}
 
 	log.Info("DB connected")

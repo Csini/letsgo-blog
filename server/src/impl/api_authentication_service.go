@@ -16,14 +16,13 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"entity"
 	openapi "generated/openapi"
 
-	"config"
-	"entity"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
-
 	utils_jwt "utils/jwt"
+
+	"gorm.io/gorm"
+	utils_db "utils/db"
 
 	"golang.org/x/crypto/bcrypt"
 	//"time"
@@ -42,32 +41,16 @@ func NewAuthenticationAPIService() openapi.AuthenticationAPIServicer {
 
 // PostLogin - provides JWT token
 func (s *AuthenticationAPIService) PostLogin(ctx context.Context, loginRequest openapi.LoginRequest) (openapi.ImplResponse, error) {
-	// TODO - update PostLogin with the required logic for this service method.
-	// Add api_authentication_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
 
-	// TODO: Uncomment the next line to return response Response(200, string{}) or use other options such as http.Ok ...
-	// return Response(200, string{}), nil
-
-	// TODO: Uncomment the next line to return response Response(400, Error{}) or use other options such as http.Ok ...
-	// return Response(400, Error{}), nil
-
-	// TODO: Uncomment the next line to return response Response(401, Error{}) or use other options such as http.Ok ...
-	// return Response(401, Error{}), nil
-
-	// TODO: Uncomment the next line to return response Response(500, Error{}) or use other options such as http.Ok ...
-	// return Response(500, Error{}), nil
-
-	db, err := gorm.Open(sqlite.Open(config.GetDbName()), &gorm.Config{
+	var gormconfig = &gorm.Config{
 
 		PrepareStmt: false,
-	})
+	}
+
+	db, err := utils_db.OpenConnection(gormconfig)
+
 	if err != nil {
-		log.Error(err)
-		return openapi.Response(500, nil), errors.New("PostLogin failed to connect database")
-	} else {
-		log.Info("yuhuuuuu")
-		//sqlite
-		db.Exec("PRAGMA foreign_keys = ON")
+		return openapi.Response(500, nil), err
 	}
 
 	var user entity.User
