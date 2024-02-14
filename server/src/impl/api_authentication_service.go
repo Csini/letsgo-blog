@@ -23,9 +23,9 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
-	"golang.org/x/crypto/bcrypt"
+	utils_jwt "utils/jwt"
 
-	"github.com/golang-jwt/jwt"
+	"golang.org/x/crypto/bcrypt"
 	//"time"
 )
 
@@ -81,7 +81,7 @@ func (s *AuthenticationAPIService) PostLogin(ctx context.Context, loginRequest o
 
 	if checkPasswordHash(loginRequest.Pw, user.Pw) {
 
-		token, err := generateJWT(user.Username)
+		token, err := utils_jwt.GenerateJWT(user.Username)
 
 		if err != nil {
 			log.Error(err)
@@ -102,19 +102,4 @@ func hashPassword(password string) (string, error) {
 func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
-}
-
-func generateJWT(username string) (string, error) {
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
-	//claims["exp"] = time.Now().Add(10 * time.Minute)
-	claims["authorized"] = true
-	claims["user"] = username
-
-	tokenString, err := token.SignedString(config.GetSecretKey())
-	if err != nil {
-		return "", err
-	}
-
-	return tokenString, nil
 }

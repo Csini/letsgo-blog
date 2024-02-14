@@ -23,7 +23,7 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
-	"github.com/golang-jwt/jwt"
+	utils_jwt "utils/jwt"
 )
 
 // CommentAPIService is a service that implements the logic for the CommentAPIServicer
@@ -50,7 +50,7 @@ func (s *CommentAPIService) PostComment(ctx context.Context, blogid int32, autho
 		return openapi.Response(401, nil), errors.New("PostComment not autherized")
 	}
 
-	userid, userid_err := getUsernameFromToken(authorization)
+	userid, userid_err := utils_jwt.GetUsernameFromToken(authorization)
 
 	if userid_err != nil {
 		return openapi.Response(401, nil), userid_err //errors.New("PostComment not autherized")
@@ -87,22 +87,4 @@ func (s *CommentAPIService) PostComment(ctx context.Context, blogid int32, autho
 
 	// returns inserted data's primary key
 	return openapi.Response(200, comment.ID), nil
-}
-func getUsernameFromToken(authorization string) (string, error) {
-
-	claims := jwt.MapClaims{}
-	token, err := jwt.ParseWithClaims(authorization, claims, func(token *jwt.Token) (interface{}, error) {
-		return config.GetSecretKey(), nil
-	})
-
-	if err != nil {
-		log.Info(token)
-		return "", err //errors.New("PostComment not autherized")
-	}
-	if token.Valid {
-		username := claims["user"].(string)
-		return username, nil
-	}
-
-	return "", errors.New("unable to extract UsernameFromToken")
 }
