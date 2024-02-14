@@ -26,7 +26,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/golang-jwt/jwt"
-	"time"
+	//"time"
 )
 
 // AuthenticationAPIService is a service that implements the logic for the AuthenticationAPIServicer
@@ -107,7 +107,7 @@ func checkPasswordHash(password, hash string) bool {
 func generateJWT(username string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
-	claims["exp"] = time.Now().Add(10 * time.Minute)
+	//claims["exp"] = time.Now().Add(10 * time.Minute)
 	claims["authorized"] = true
 	claims["user"] = username
 

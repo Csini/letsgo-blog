@@ -22,6 +22,8 @@ import (
 	"entity"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+
+	"github.com/golang-jwt/jwt"
 )
 
 // CommentAPIService is a service that implements the logic for the CommentAPIServicer
@@ -39,10 +41,19 @@ func NewCommentAPIService() openapi.CommentAPIServicer {
 func (s *CommentAPIService) PostComment(ctx context.Context, blogid int32, authorization string, commentRequest openapi.CommentRequest) (openapi.ImplResponse, error) {
 
 	//TODO check jwt token in authorization and get userid from it
-	userid := "testuser"
+	//authorization = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOiIyMDI0LTAyLTEzVDE5OjI1OjM4LjQxMTA4NDgzMyswMTowMCIsInVzZXIiOiJ0ZXN0dXNlciJ9.Hb-lMGdLvAdA6x3lRSXiiQG1GcslOJWxaTmevuO6DPk"
+
+	log.Info(authorization)
+
 	//if !token.isValid(){
-	if authorization != "" {
+	if authorization == "" {
 		return openapi.Response(401, nil), errors.New("PostComment not autherized")
+	}
+
+	userid, userid_err := getUsernameFromToken(authorization)
+
+	if userid_err != nil {
+		return openapi.Response(401, nil), userid_err //errors.New("PostComment not autherized")
 	}
 
 	db, err := gorm.Open(sqlite.Open(config.GetDbName()), &gorm.Config{
@@ -65,7 +76,7 @@ func (s *CommentAPIService) PostComment(ctx context.Context, blogid int32, autho
 	db.First(&blog, blogid)
 
 	if blog.User_ID != userid {
-		return openapi.Response(401, nil), errors.New("PostComment not autherized to this blog")
+		return openapi.Response(401, nil), errors.New("user not autherized to this blog")
 	}
 
 	// create commet
@@ -76,4 +87,22 @@ func (s *CommentAPIService) PostComment(ctx context.Context, blogid int32, autho
 
 	// returns inserted data's primary key
 	return openapi.Response(200, comment.ID), nil
+}
+func getUsernameFromToken(authorization string) (string, error) {
+
+	claims := jwt.MapClaims{}
+	token, err := jwt.ParseWithClaims(authorization, claims, func(token *jwt.Token) (interface{}, error) {
+		return config.GetSecretKey(), nil
+	})
+
+	if err != nil {
+		log.Info(token)
+		return "", err //errors.New("PostComment not autherized")
+	}
+	if token.Valid {
+		username := claims["user"].(string)
+		return username, nil
+	}
+
+	return "", errors.New("unable to extract UsernameFromToken")
 }
