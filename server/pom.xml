@@ -44,6 +44,9 @@
 					<env>
 						<GO111MODULE>auto</GO111MODULE>
 					</env>
+					<!-- <addToGoPath> -->
+					<!-- <dir>${basedir}${file.separator}test</dir> -->
+					<!-- </addToGoPath> -->
 				</configuration>
 				<executions>
 					<execution>
@@ -77,12 +80,13 @@
 					<!-- <tag>v5.0.11</tag> -->
 					<!-- </configuration> -->
 					<!-- </execution> -->
-					<!-- <execution> -->
-					<!-- <id>default-test</id> -->
-					<!-- <configuration> -->
-					<!-- <skip>true</skip> -->
-					<!-- </configuration> -->
-					<!-- </execution> -->
+					<execution>
+						<id>default-test</id>
+						<configuration>
+							<skip>false</skip>
+							<workingDir>${basedir}${file.separator}test</workingDir>
+						</configuration>
+					</execution>
 					<!-- <execution> -->
 					<!-- <id>default-mod</id> -->
 					<!-- <phase>process-resources</phase> -->
@@ -256,6 +260,24 @@
 									</includes>
 								</resource>
 							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>test</source>
+							</sources>
 						</configuration>
 					</execution>
 				</executions>
