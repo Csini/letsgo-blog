@@ -21,6 +21,8 @@ import (
 	"gorm.io/gorm"
 	utils_db "utils/db"
 
+	model "impl/model"
+
 	//"slices"
 	//"fmt"
 	"time"
@@ -65,59 +67,41 @@ func (s *StatisticsAPIService) GetStatistics(ctx context.Context, days int32) (o
 	}).Info("calculated")
 
 	var statistics openapi.StatisticsResponse
-
 	statistics.BeforeThisDate = beforeThisDate
 
-	type CustomRawResult struct {
-		username string
-		amount   int32
+	blog_results, err := getBlogResults(db, beforeThisDate)
+	if err != nil {
+		return openapi.Response(500, nil), err
 	}
 
-	var blog_results []CustomRawResult
-	//var blog_results []map[string]interface{}
-	// Where("updated_at > ?", lastWeek)
-	//db.Raw("select user_id as username, count(id) as amount from blogs WHERE created_at > ? group by user_id", beforeThisDate).Scan(&blog_results)
-	//db.Table("blogs").Select("user_id as username, count(id) as amount").Where("created_at > ?", beforeThisDate).Group("user_id").Find(&blog_results)
-
-	var comment_results []CustomRawResult
-	//var comment_results []map[string]interface{}
-	//db.Raw("select user_id as username, count(id) as amount from comments WHERE created_at > ? group by user_id", beforeThisDate).Scan(&comment_results)
-
-	// Raw SQL
-	blog_rows, err := db.Raw("select user_id as username, count(id) as amount from blogs WHERE created_at > ? group by user_id", beforeThisDate).Rows()
-	defer blog_rows.Close()
-	for blog_rows.Next() {
-		var username string
-		var amount int32
-		blog_rows.Scan(&username, &amount)
-
-		blog_row := CustomRawResult{username: username, amount: amount}
-		blog_results = append(blog_results,
-			blog_row)
+	comment_results, err := getCommentResults(db, beforeThisDate)
+	if err != nil {
+		return openapi.Response(500, nil), err
 	}
-	log.Debug(blog_results)
-
-	comment_rows, err := db.Raw("select user_id as username, count(id) as amount from comments WHERE created_at > ? group by user_id", beforeThisDate).Rows()
-	defer comment_rows.Close()
-	for comment_rows.Next() {
-		var username string
-		var amount int32
-		comment_rows.Scan(&username, &amount)
-
-		comment_row := CustomRawResult{username: username, amount: amount}
-		comment_results = append(blog_results,
-			comment_row)
-	}
-	log.Debug(comment_results)
-
-	//merge the two results with list of all users and send back as a list of Statistic
 
 	var users []entity.User
 	// Get all records
-	db.Find(&users)
+	result := db.Find(&users)
 	// SELECT * FROM users;
 	//result.RowsAffected // returns found records count, equals `len(users)`
 	//result.Error        // returns error
+	if result.Error != nil {
+		return openapi.Response(500, nil), result.Error
+	}
+
+	//merge the two results with list of all users and send back as a list of Statistic
+	items := HandleUsers(users, blog_results, comment_results)
+
+	statistics.Items = items
+	statistics.Size = int32(len(items))
+
+	return openapi.Response(200, statistics), nil
+
+}
+
+func HandleUsers(users []entity.User, blog_results []model.CustomRawResult, comment_results []model.CustomRawResult) []openapi.Statistic {
+
+	var items []openapi.Statistic
 
 	// using for loop
 	for _, element := range users {
@@ -128,23 +112,23 @@ func (s *StatisticsAPIService) GetStatistics(ctx context.Context, days int32) (o
 		var amountComment int32
 
 		for _, blog_result := range blog_results {
-			if blog_result.username == element.Username {
+			if blog_result.Username == element.Username {
 				log.WithFields(log.Fields{
-					"blog_result.amount":   blog_result.amount,
-					"blog_result.username": blog_result.username,
+					"blog_result.amount":   blog_result.Amount,
+					"blog_result.username": blog_result.Username,
 				}).Info(element.Username)
-				amountBlog = blog_result.amount
+				amountBlog = blog_result.Amount
 				break
 			}
 		}
 
 		for _, comment_result := range comment_results {
-			if comment_result.username == element.Username {
+			if comment_result.Username == element.Username {
 				log.WithFields(log.Fields{
-					"comment_result.amount":   comment_result.amount,
-					"comment_result.username": comment_result.username,
+					"comment_result.amount":   comment_result.Amount,
+					"comment_result.username": comment_result.Username,
 				}).Info(element.Username)
-				amountComment = comment_result.amount
+				amountComment = comment_result.Amount
 				break
 			}
 		}
@@ -152,12 +136,51 @@ func (s *StatisticsAPIService) GetStatistics(ctx context.Context, days int32) (o
 		amountObject := openapi.Amount{Blog: amountBlog, Comment: amountComment}
 		statistic := openapi.Statistic{Userid: element.Username, Amount: amountObject}
 
-		statistics.Items = append(statistics.Items,
-			statistic)
+		items = append(items, statistic)
 	}
 
-	statistics.Size = int32(len(statistics.Items))
+	return items
+}
 
-	return openapi.Response(200, statistics), nil
+func getBlogResults(db *gorm.DB, beforeThisDate time.Time) ([]model.CustomRawResult, error) {
+	var blog_results []model.CustomRawResult
 
+	blog_rows, err := db.Raw("select user_id as username, count(id) as amount from blogs WHERE created_at > ? group by user_id", beforeThisDate).Rows()
+	defer blog_rows.Close()
+	for blog_rows.Next() {
+		var username string
+		var amount int32
+		blog_rows.Scan(&username, &amount)
+
+		blog_row := model.CustomRawResult{Username: username, Amount: amount}
+		blog_results = append(blog_results,
+			blog_row)
+	}
+	if err != nil {
+		return nil, err
+	}
+	log.Debug(blog_results)
+	return blog_results, nil
+
+}
+
+func getCommentResults(db *gorm.DB, beforeThisDate time.Time) ([]model.CustomRawResult, error) {
+	var comment_results []model.CustomRawResult
+
+	comment_rows, err := db.Raw("select user_id as username, count(id) as amount from comments WHERE created_at > ? group by user_id", beforeThisDate).Rows()
+	defer comment_rows.Close()
+	for comment_rows.Next() {
+		var username string
+		var amount int32
+		comment_rows.Scan(&username, &amount)
+
+		comment_row := model.CustomRawResult{Username: username, Amount: amount}
+		comment_results = append(comment_results,
+			comment_row)
+	}
+	if err != nil {
+		return nil, err
+	}
+	log.Debug(comment_results)
+	return comment_results, nil
 }
