@@ -6,12 +6,18 @@ import (
 	"config"
 
 	"errors"
+	"strings"
 
 	"github.com/golang-jwt/jwt"
 	//"time"
 )
 
 func GenerateJWT(username string) (string, error) {
+
+	if strings.TrimSpace(username) == "" {
+		return "", errors.New("empty username")
+	}
+
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	//claims["exp"] = time.Now().Add(10 * time.Minute)
@@ -25,7 +31,12 @@ func GenerateJWT(username string) (string, error) {
 
 	return tokenString, nil
 }
+
 func GetUsernameFromToken(authorization string) (string, error) {
+
+	if strings.TrimSpace(authorization) == "" {
+		return "", errors.New("empty authorization")
+	}
 
 	claims := jwt.MapClaims{}
 	token, err := jwt.ParseWithClaims(authorization, claims, func(token *jwt.Token) (interface{}, error) {
@@ -36,6 +47,7 @@ func GetUsernameFromToken(authorization string) (string, error) {
 		log.Info(token)
 		return "", err //errors.New("PostComment not autherized")
 	}
+
 	if token.Valid {
 		username := claims["user"].(string)
 		return username, nil

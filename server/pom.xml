@@ -44,14 +44,12 @@
 					<env>
 						<GO111MODULE>auto</GO111MODULE>
 					</env>
-					<!-- <addToGoPath> -->
-					<!-- <dir>${basedir}${file.separator}test</dir> -->
-					<!-- </addToGoPath> -->
 				</configuration>
 				<executions>
 					<execution>
 						<id>default-get</id>
 						<configuration>
+							<skip>false</skip>
 							<packages>
 								<!-- <package>github.com/go-chi/chi/v5</package> -->
 								<package>github.com/gorilla/mux</package>
@@ -65,76 +63,35 @@
 								<!-- <package>github.com/golang-jwt/jwt/v5</package> -->
 								<package>github.com/golang-jwt/jwt</package>
 								<package>github.com/joho/godotenv</package>
+								<package>github.com/stretchr/testify/assert</package>
 							</packages>
 						</configuration>
 					</execution>
-					<!-- <execution> -->
-					<!-- <id>get-chi</id> -->
-					<!-- <goals> -->
-					<!-- <goal>get</goal> -->
-					<!-- </goals> -->
-					<!-- <configuration> -->
-					<!-- <packages> -->
-					<!-- <package>github.com/go-chi/chi</package> -->
-					<!-- </packages> -->
-					<!-- <tag>v5.0.11</tag> -->
-					<!-- </configuration> -->
-					<!-- </execution> -->
 					<execution>
 						<id>default-test</id>
 						<configuration>
-							<skip>false</skip>
 							<workingDir>${basedir}${file.separator}test</workingDir>
 						</configuration>
 					</execution>
-					<!-- <execution> -->
-					<!-- <id>default-mod</id> -->
-					<!-- <phase>process-resources</phase> -->
-					<!-- <goals> -->
-					<!-- <goal>mod</goal> -->
-					<!-- </goals> -->
-					<!-- <configuration> -->
-					<!-- <command>init</command> -->
-					<!-- <arguments> -->
-					<!-- <argument>github.com/go-chi/chi/v5</argument> -->
-					<!-- </arguments> -->
-					<!-- </configuration> -->
-					<!-- </execution> -->
-					<!-- <execution> -->
-					<!-- <id>default-fmt</id> -->
-					<!-- <configuration> -->
-					<!-- <useGoTool>bin/goimports</useGoTool> -->
-					<!-- <buildFlags> -->
-					<!-- <buildFlag>-l</buildFlag> -->
-					<!-- <buildFlag>-w</buildFlag> -->
-					<!-- </buildFlags> -->
-					<!-- <exec>goimports</exec> -->
-					<!-- </configuration> -->
-					<!-- </execution> -->
-					<!-- <execution> -->
-					<!-- <id>run-goimports</id> -->
-					<!-- <phase>process-sources</phase> -->
-					<!-- <goals> -->
-					<!-- <goal>custom</goal> -->
-					<!-- </goals> -->
-					<!-- <configuration> -->
-					<!-- <xprog>goimports</xprog> -->
-					<!-- <args> -->
-					<!-- <arg>-l</arg> -->
-					<!-- <arg>-w</arg> -->
-					<!-- </args> -->
-					<!-- <customCommand>goimports -l -w</customCommand> -->
-					<!-- <execSubpath>bin</execSubpath> -->
-					<!-- </configuration> -->
-					<!-- </execution> -->
+<!-- 					<execution> -->
+<!-- 						<id>id-test-calculate-coverage</id> -->
+<!-- 						<goals> -->
+<!-- 							<goal>tool</goal> -->
+<!-- 						</goals> -->
+<!-- 						<phase>test</phase> -->
+<!-- 						<configuration> -->
+<!-- 							<command>covdata</command> -->
+<!-- 							<args> -->
+<!-- 								<arg>percent</arg> -->
+<!-- 							</args> -->
+<!-- 						</configuration> -->
+<!-- 					</execution> -->
 				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
-				<!-- RELEASE_VERSION -->
 				<version>7.3.0</version>
-				<!-- /RELEASE_VERSION -->
 				<dependencies>
 					<dependency>
 						<groupId>${project.groupId}</groupId>
